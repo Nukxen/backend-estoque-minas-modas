@@ -13,9 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String 
-  email String @unique
-  telefone String?  
+model Storage {
+  id        String @id @default(uuid())
+  IdProduct String
+  quantity  Int
+}
+
+model Product {
+  id        String  @id @default(uuid())
+  numericId Int
+  name      String
+  value     Decimal @db.Money
+}
+
+model SellApoints {
+  id       String   @id @default(uuid())
+  idItem   Int
+  data     DateTime
+  quantity Int
 }
