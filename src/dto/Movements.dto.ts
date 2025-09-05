@@ -1,15 +1,11 @@
 import { ApiProperty,PartialType } from '@nestjs/swagger';
 import { IsString, IsNumber, IsBoolean, IsDate, IsEnum, IsOptional, IsArray, IsUUID, IsJSON, IsNotEmpty } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateMovementsDto {
-  @ApiProperty({ name: 'id', description: 'id.' })
-  @IsOptional()
-  @IsString()
-  id?: string;
-
   @ApiProperty({ name: 'value', description: 'value.' })
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   value: number;
 
@@ -30,14 +26,14 @@ export class CreateMovementsDto {
 
   @ApiProperty({ name: 'createdAt', description: 'createdAt.' })
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
-  @Transform(({ value }) => new Date(value))
   createdAt?: Date;
 
   @ApiProperty({ name: 'updatedAt', description: 'updatedAt.' })
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
-  @Transform(({ value }) => new Date(value))
   updatedAt?: Date;
 
 }

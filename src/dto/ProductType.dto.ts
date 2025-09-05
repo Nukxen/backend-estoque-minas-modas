@@ -1,13 +1,8 @@
 import { ApiProperty,PartialType } from '@nestjs/swagger';
 import { IsString, IsNumber, IsBoolean, IsDate, IsEnum, IsOptional, IsArray, IsUUID, IsJSON, IsNotEmpty } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateProductTypeDto {
-  @ApiProperty({ name: 'id', description: 'id.' })
-  @IsOptional()
-  @IsString()
-  id?: string;
-
   @ApiProperty({ name: 'name', description: 'name.' })
   @IsNotEmpty()
   @IsString()
@@ -15,6 +10,7 @@ export class CreateProductTypeDto {
 
   @ApiProperty({ name: 'basePrice', description: 'basePrice.' })
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   basePrice: number;
 

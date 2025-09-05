@@ -55,40 +55,42 @@ export class ProductsService {
   }
 
   async getAll(Filter:FilterDto){
-    await validateOrReject(Filter)
+    return await tryCatch(async()=>{
+      await validateOrReject(Filter)
 
-    const WhereInput:Prisma.ProductWhereInput = {
+      const WhereInput:Prisma.ProductWhereInput = {
 
-    }
-
-    if(Filter.name){
-      WhereInput.name = {
-        contains: Filter.name
       }
-    }
-    if(Filter.priceInterval){
-      WhereInput.price = {
-        gte: Filter.priceInterval[0],
-        lte: Filter.priceInterval[1]
+
+      if(Filter.name){
+        WhereInput.name = {
+          contains: Filter.name
+        }
       }
-    }
-    if(Filter.type){
-      WhereInput.productTypeId = Filter.type
-    }
+      if(Filter.priceInterval){
+        WhereInput.price = {
+          gte: Filter.priceInterval[0],
+          lte: Filter.priceInterval[1]
+        }
+      }
+      if(Filter.type){
+        WhereInput.productTypeId = Filter.type
+      }
 
 
-    const res = await this.prisma.product.findMany({
-      where:WhereInput,
-      orderBy:{
-        createdAt: 'desc'
+      const res = await this.prisma.product.findMany({
+        where:WhereInput,
+        orderBy:{
+          createdAt: 'desc'
+        }
+      })
+
+      if(res.length == 0){
+        return SuccessReturn.NoContent('Produtos não encontrados nesse filtro!')
       }
+
+      return SuccessReturn.Ok(res, 'Produtos encontrados com sucesso!')
     })
-
-    if(res.length == 0){
-      return SuccessReturn.NoContent('Produtos não encontrados nesse filtro!')
-    }
-
-    return SuccessReturn.Ok(res, 'Produtos encontrados com sucesso!')
   }
 
 }

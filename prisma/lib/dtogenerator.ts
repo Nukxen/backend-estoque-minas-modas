@@ -66,25 +66,16 @@ const GenerateEnumFiles = (enums: EnumType[], outputDir: string) => {
   });
 };
 const ToTypescriptType = (prismaType: string, isEnum: boolean): string => {
-  if (isEnum) {
-    return prismaType;
-  }
+  if (isEnum) return prismaType;
   switch (prismaType) {
-    case 'String':
-      return 'string';
+    case 'String': return 'string';
     case 'Int':
-      return 'number';
     case 'Float':
-    case 'Decimal':
-      return 'number';
-    case 'Boolean':
-      return 'boolean';
-    case 'DateTime':
-      return 'Date';
-    case 'Json':
-      return 'Record<string, any>';
-    default:
-      return prismaType; // Para enums
+    case 'Decimal': return 'number';
+    case 'Boolean': return 'boolean';
+    case 'DateTime': return 'Date';
+    case 'Json': return 'Record<string, any>';
+    default: return prismaType;
   }
 };
 const getValidatorDecorator = (
@@ -99,14 +90,15 @@ const getValidatorDecorator = (
     case 'Int':
     case 'Float':
     case 'Decimal':
-      return '@IsNumber()';
+      return `@Type(() => Number)
+  @IsNumber()`;
     case 'Boolean':
       return '@IsBoolean()';
     case 'DateTime':
-      return `@IsDate()
-  @Transform(({ value }) => new Date(value))`;
+      return `@Type(() => Date)
+  @IsDate()`;
     case 'Json':
-      return '@IsJSON()';
+      return '@IsObject()';
     default:
       return '';
   }
@@ -120,7 +112,7 @@ const GenerateDtoFiles = (
     const lines = [
       `import { ApiProperty,PartialType } from '@nestjs/swagger';`,
       `import { IsString, IsNumber, IsBoolean, IsDate, IsEnum, IsOptional, IsArray, IsUUID, IsJSON, IsNotEmpty } from 'class-validator';`,
-      `import { Transform } from 'class-transformer';`,
+      `import { Type } from 'class-transformer';`,
     ];
 
     const importsEnums: string[] = [];
@@ -137,6 +129,10 @@ const GenerateDtoFiles = (
 
     lines.push(``, `export class Create${model.tableName}Dto {`);
     model.fields.forEach((field) => {
+      if(field.isId){
+        return
+      }
+
       const isEnum = enums.some((e) => e.name === field.type);
       const tsType = ToTypescriptType(field.type, isEnum);
       const decorator = getValidatorDecorator(field.type, isEnum, field.type);

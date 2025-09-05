@@ -1,14 +1,9 @@
 import { ApiProperty,PartialType } from '@nestjs/swagger';
 import { IsString, IsNumber, IsBoolean, IsDate, IsEnum, IsOptional, IsArray, IsUUID, IsJSON, IsNotEmpty } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { enum_acess_level } from './enums/enum_acess_level';
 
 export class CreateUserDto {
-  @ApiProperty({ name: 'id', description: 'id.' })
-  @IsOptional()
-  @IsString()
-  id?: string;
-
   @ApiProperty({ name: 'username', description: 'username.' })
   @IsNotEmpty()
   @IsString()
@@ -26,14 +21,14 @@ export class CreateUserDto {
 
   @ApiProperty({ name: 'createdAt', description: 'createdAt.' })
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
-  @Transform(({ value }) => new Date(value))
   createdAt?: Date;
 
   @ApiProperty({ name: 'updatedAt', description: 'updatedAt.' })
   @IsOptional()
+  @Type(() => Date)
   @IsDate()
-  @Transform(({ value }) => new Date(value))
   updatedAt?: Date;
 
 }

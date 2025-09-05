@@ -30,7 +30,7 @@ export class ProducttypeService {
 
       const res = this.prisma.productType.update({
         where:{
-          id: dto.id
+          id: id
         },
         data: dto
       })
