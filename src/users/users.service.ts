@@ -6,8 +6,8 @@ import { ErrorReturn, toHttpException } from 'src/lib/error-lib/error-lib';
 import { SuccessReturn } from 'src/lib/return-lib/return-lib';
 import { tryCatch } from 'src/lib/try-catch/tryCatch';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserDeleteDto } from 'src/users/dto/userDelete.dto';
 import { UserLoginDto } from 'src/users/dto/userLogin.dto';
+import { DeleteDto } from 'src/utils/delete.dto';
 import { ARGON_OPTS, PEPPER } from 'src/utils/env';
 import { UUID } from 'src/utils/validator';
 
@@ -47,14 +47,12 @@ export class UsersService {
         data:dto,select: { id: true, username: true, userLevel: true, createdAt: true },
       })
 
-      return SuccessReturn.Ok<any>(data,'Usuario criado com sucesso!')
+      return SuccessReturn.Created<any>(data,'Usuario criado com sucesso!')
     })
   }
   async update(id:string, dto:UpdateUserDto){
     return await tryCatch(async()=>{
-      const validId = new UUID()
-      validId.id = id
-      await validateOrReject(validId)
+      await validateOrReject(new UUID(id))
       await validateOrReject(dto)
 
       if(dto.passwordHash){
@@ -69,16 +67,16 @@ export class UsersService {
       return SuccessReturn.Ok<any>(data,'Usuario criado com sucesso!')
     })
   }
-  async delete(id:UserDeleteDto){
+  async delete(dto:DeleteDto){
     return await tryCatch(async()=>{
-      await validateOrReject(id)
+      await validateOrReject(dto)
 
-      if(id.acessLevel === 'USER'){
+      if(dto.acessLevel === 'USER'){
         throw toHttpException(ErrorReturn.Unauthorized({ message: "Você não pode realizar essa ação!"}))
       }
 
       this.prisma.user.delete({
-        where:{id:id.id}
+        where:{id:dto.id}
       })
 
       return SuccessReturn.NoContent('Usuario deletado com sucesso!')
